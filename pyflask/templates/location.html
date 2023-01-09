@@ -1,0 +1,446 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<title>BDSE28 車禍數據分析</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="../static/assets/css/main.css" />
+	<link rel="icon" href="{{ url_for('static', filename='images/car_crash.png') }}">
+	<noscript>
+		<link rel="stylesheet" href="../static/assets/css/noscript.css" />
+	</noscript>
+
+	<!-- leaflet -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+		integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+		integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+
+	<!-- MarkerCluster -->
+
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css">
+	</link>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
+
+	<style>
+		.marker-cluster-small {
+			background-color: rgba(181, 226, 140, 0.6);
+		}
+
+		.marker-cluster-small div {
+			background-color: rgba(110, 204, 57, 0.6);
+		}
+
+		.marker-cluster-medium {
+			background-color: rgba(241, 211, 87, 0.6);
+		}
+
+		.marker-cluster-medium div {
+			background-color: rgba(240, 194, 12, 0.6);
+		}
+
+		.marker-cluster-large {
+			background-color: rgba(253, 156, 115, 0.6);
+		}
+
+		.marker-cluster-large div {
+			background-color: rgba(241, 128, 23, 0.6);
+		}
+
+		.marker-cluster {
+			background-clip: padding-box;
+			border-radius: 20px;
+		}
+
+		.marker-cluster div {
+			width: 30px;
+			height: 30px;
+			margin-left: 5px;
+			margin-top: 5px;
+
+			text-align: center;
+			border-radius: 15px;
+			font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+		}
+
+		.marker-cluster span {
+			line-height: 30px;
+		}
+	</style>
+
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<a href="/" class="logo">BDSE NO.4</a>
+		</header>
+
+		<!-- Nav -->
+		<nav id="nav">
+			<ul class="links">
+				<li><a href="/">This is BDSE28 NO.4</a></li>
+				<li class="active"><a href="location">各縣市車禍分佈</a></li>
+				<li><a href="model">車禍數據模型</a></li>
+
+			</ul>
+			<ul class="icons">
+				<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+				<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+				<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+				<li><a href="#" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+			</ul>
+		</nav>
+
+		<!-- Main -->
+		<div id="main">
+
+			<!-- Post -->
+			<section class="post">
+				<header class="major">
+					<h1>各縣市車禍分佈</h1>
+				</header>
+
+				<!-- Text stuff -->
+				<!-- <h2>Text</h2> -->
+
+
+				<select class="year_option" id="year_Select">
+					<option selected>請選擇年份</option>
+					<option value="2018">2018</option>
+					<option value="2019">2019</option>
+					<option value="2020">2020</option>
+					<option value="2021">2021</option>
+					<option value="2022">2022</option>
+				</select>
+
+				<select class="location_option" id="location_Select">
+					<option selected>請選擇縣市</option>
+					<option value="keelung">基隆市</option>
+					<option value="taipei">台北市</option>
+					<option value="newtaipeicity">新北市</option>
+					<option value="taoyuan">桃園市</option>
+					<option value="hsinchu">新竹市</option>
+					<option value="hsinchucounty">新竹縣</option>
+					<option value="miaolicounty">苗栗縣</option>
+					<option value="taichung">台中市</option>
+					<option value="changhuacounty">彰化縣</option>
+					<option value="nantoucounty">南投縣</option>
+					<option value="yunlincounty">雲林縣</option>
+					<option value="chiayi">嘉義市</option>
+					<option value="chiayicounty">嘉義縣</option>
+					<option value="tainan">台南市</option>
+					<option value="kaohsiung">高雄市</option>
+					<option value="pingtungcounty">屏東縣</option>
+					<option value="taitungcounty">台東縣</option>
+					<option value="hualiencounty">花蓮縣</option>
+					<option value="yilancounty">宜蘭縣</option>
+					<option value="penghucounty">澎湖縣</option>
+					<option value="kinmencounty">金門縣</option>
+					<option value="lienchiangcounty">連江縣</option>
+				</select>
+
+				</br>
+
+				<button class="button fit" id="btn_request">送出查詢</button>
+
+				<hr />
+
+				<!-- leaflet地圖 -->
+				<div id="map" class="box" style="height: 600px; width: 100%;"></div>
+
+				<script>
+
+					// var map = L.map('map').setView([25.0305061, 121.5289971], 13);
+					var map = L.map('map', { scrollWheelZoom: false }).setView([25.0305061, 121.5289971], 13);
+
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+					}).addTo(map);
+
+					var locIcon = L.icon({
+						iconUrl: '../static/images/location-61.png',
+
+						iconSize: [30, 45], // size of the icon
+						// shadowSize: [15, 30], // size of the shadow
+						iconAnchor: [15, 35], // point of the icon which will correspond to marker's location
+						// shadowAnchor: [4, 62],  // the same for the shadow
+						popupAnchor: [0, -40] // point from which the popup should open relative to the iconAnchor
+					});
+
+					let layerGroup = null;
+					let arrLayers = [];
+					let polygon;
+
+					const selectYear = document.querySelector('.year_option');
+					const selectLocation = document.querySelector('.location_option');
+
+					function getlocation(getsql) {
+						fetch(getsql, {
+							method: "GET"
+						}).then(function (response) {
+							return response.json();
+						}).then(function (arr) {
+							if (layerGroup != null && map.hasLayer(layerGroup)) {
+								layerGroup.clearLayers();
+								map.removeLayer(layerGroup);
+
+								layerGroup = null;
+								arrLayers = [];
+							}
+
+							document.getElementById('accident_count').innerText = `當年度車禍數 :  + ${arr.length / 2} 件`;
+
+							var markers = L.markerClusterGroup({ spiderfyOnMaxZoom: false, showCoverageOnHover: false, zoomToBoundsOnClick: false });
+
+							for (let i = 0; i < arr.length; i += 2) {
+								let lat = arr[i];
+								let lng = arr[i + 1];
+								let marker = L.marker([lat, lng], { icon: locIcon })
+									.bindPopup(`Latitude: ${lat}<br>Longitude: ${lng}`)
+									.openPopup();
+
+								marker.addEventListener('click', function (event) {
+									console.log(lat, lng);
+								});
+								//將 markers 各別放到空陣列 arrLayers 當中
+								arrLayers.push(marker);
+							}
+							//迴圈執行完畢後，將 arrLayers 放到 layerGroup 當中
+							layerGroup = markers.addLayer(L.layerGroup(arrLayers));
+							//將 layerGroup 放到 map 當中
+							layerGroup.addTo(map);
+						});
+					}
+
+					document.querySelector('button#btn_request').addEventListener('click', function (event) {
+						const result = document.querySelector('.result');
+						getlocation(`/option/${selectLocation.value}_${selectYear.value}`)
+
+						if (polygon) {
+							polygon.remove();
+						}
+						// 依照縣市設定邊界及地圖顯示的座標
+						switch (selectLocation.value) {
+							case ("keelung"):
+								fetch('../static/polygon/keelung.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([25.1272072, 121.7367835], 13);
+								break;
+							case ("taipei"):
+								fetch('../static/polygon/taipei.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([25.0339145, 121.5412233], 13);
+								break;
+							case ("newtaipeicity"):
+								fetch('../static/polygon/newTaipeiCity.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([25.0149318, 121.4729936, 15], 13);
+								break;
+							case ("taoyuan"):
+								fetch('../static/polygon/taoyuan.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.991025, 121.2850733], 13);
+								break;
+							case ("hsinchu"):
+								fetch('../static/polygon/hsinchu.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.7835529, 120.9316642], 13);
+								break;
+							case ("hsinchucounty"):
+								fetch('../static/polygon/hsinchuCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.8491971, 121.0670444], 5);
+								break;
+							case ("miaolicounty"):
+								fetch('../static/polygon/miaoliCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.5456455, 120.8527485], 13);
+								break;
+							case ("taichung"):
+								fetch('../static/polygon/taichung.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.1459811, 120.6707398], 13);
+								break;
+							case ("changhuacounty"):
+								fetch('../static/polygon/changhuaCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.992187, 120.3230685], 13);
+								break;
+							case ("nantoucounty"):
+								fetch('../static/polygon/nantouCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.9508903, 120.9468249], 13);
+								break;
+							case ("yunlincounty"):
+								fetch('../static/polygon/yunlinCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.6745746, 120.2945075], 13);
+								break;
+							case ("chiayi"):
+								fetch('../static/polygon/chiayi.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.4790323, 120.414277], 13);
+								break;
+							case ("chiayicounty"):
+								fetch('../static/polygon/chiayiCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.425616, 120.3974609], 13);
+								break;
+							case ("tainan"):
+								fetch('../static/polygon/tainan.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.0070342, 120.249638], 13);
+								break;
+							case ("kaohsiung"):
+								fetch('../static/polygon/kaohsiung.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([22.6283618, 120.3265012], 13);
+								break;
+							case ("pingtungcounty"):
+								fetch('../static/polygon/pingtungCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([22.6053635, 120.5368672], 5);
+								break;
+							case ("taitungcounty"):
+								fetch('../static/polygon/taitungCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([22.7785848, 121.0972989], 13);
+								break;
+							case ("hualiencounty"):
+								fetch('../static/polygon/hualienCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.7289695, 121.379031], 13);
+								break;
+							case ("yilancounty"):
+								fetch('../static/polygon/yilanCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.6927874, 121.7777614], 13);
+								break;
+							case ("penghucounty"):
+								fetch('../static/polygon/penghuCounty.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([23.5682493, 119.5960847], 13);
+								break;
+							case ("kinmencounty"):
+								fetch('../static/polygon/kinmen.json')
+									.then(response => response.json())
+									.then(data => {
+										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
+									})
+								map.panTo([24.6916992, 118.2699011], 13);
+								break;
+							case ("lienchiangcounty"):
+								fetch('../static/polygon/lienchiangCounty.json')
+									.then(response => response.json())
+									.then(datas => {
+										datas.forEach(data => {
+											L.polygon(data, { color: 'yellow' }).addTo(map);
+										});
+									})
+								map.panTo([26.139729, 120.0108395], 13);
+								break;
+						}
+
+					});
+
+				</script>
+
+				<hr />
+				<header>
+					<h2 id="accident_count">當年度車禍數 :</h2>
+					<!-- <p>test</p> -->
+				</header>
+
+		</div>
+
+
+		<!-- Copyright -->
+		<div id="copyright">
+			<ul>
+				<li>&copy; Untitled</li>
+				<li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+			</ul>
+		</div>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="../static/assets/js/jquery.min.js"></script>
+	<script src="../static/assets/js/jquery.scrollex.min.js"></script>
+	<script src="../static/assets/js/jquery.scrolly.min.js"></script>
+	<script src="../static/assets/js/browser.min.js"></script>
+	<script src="../static/assets/js/breakpoints.min.js"></script>
+	<script src="../static/assets/js/util.js"></script>
+	<script src="../static/assets/js/main.js"></script>
+
+</body>
+
+</html>
