@@ -126,7 +126,6 @@
 					<!-- <p>敘述模型</p> -->
 				</header>
 
-
 				<input class="js-demeter-tw-zipcode-selector" data-city="#city" data-dist="#dist"
 					placeholder="請輸入郵遞區號" />
 				<select id="city" placeholder="請選擇縣市"></select>
@@ -149,7 +148,7 @@
 				<!-- 頁籤 -->
 				<div class="tab_css">
 					<!-- TAB1 打包區塊 start -->
-					<input id="tab1" type="radio" name="tab" checked="checked" />
+					<input id="tab1" type="radio" name="tab" />
 					<label for="tab1">預測地點 1</label>
 					<div class="tab_content">
 						<div class="chart-box dark">
@@ -354,13 +353,20 @@
 
 									// 取得 <div id="result"> 元素
 									let div_re = document.getElementById('result');
+									let div_addr = document.getElementById('result_address');
 
 									// 將資料印在 <div> 元素裡面
-									div_re.innerHTML = `<b>人口密度 : ${alldata['density']} /每平方公里 </b>`;
+									div_addr.innerHTML = `<b>${selectCity.value}${selectDist.value}${inputRoad.value}</b>`
+									div_re.innerHTML = `<b> 人口密度 : ${alldata['density']}  人/每平方公里 </b>`;
 
 									// 圖表js
 									countChart += 1;
+									if (countChart > 3) {
+										countChart = 0;
+									}
 									var ctx = document.getElementById(`myChart${countChart}`);
+									var get_tab = document.getElementById(`tab${countChart}`);
+									get_tab.click();
 
 									var myChart = new Chart(ctx, {
 										type: 'line',

@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd 
 from scipy import spatial
 import openpyxl
-import datetime
+from datetime import datetime,timedelta
 import requests , json
 import pickle
+import pytz
 
 stream = pd.read_csv('110.csv', low_memory=False)
 stream['總計_流量(PCU)'] = stream['總計_流量(PCU)'].str.findall('\d').str.join('').astype(int)
@@ -19,8 +20,9 @@ def population(county_dist , coo):
     else:
         density = 0
 
+    tz = pytz.timezone('Asia/Taipei')
     # 取得當前日期
-    today = datetime.datetime.today()
+    today = datetime.datetime.today(tz)
     
     # 計算隔天日期
     # tomorrow = today + datetime.timedelta(days=1)
@@ -222,43 +224,6 @@ def dataFill(dic):
     
     return df
 
-# https://www.visualcrossing.com
-# def weatherAPI(df1):
-#     # 密鑰
-# #     key = '4KD3GK5WQ8HX23YXVEVS3ZYPM'
-#     key = 'NZKHHNNZV9ZXDRGDM4NJTT9YR'
-#     # 緯度，經度
-#     a1 = f"{df1.iloc[0,14]},{df1.iloc[0,13]}"
-#     # 時間
-#     t1 = f"{df1.iloc[0,9]}-{df1.iloc[0,10]}-{df1.iloc[0,11]}"
-#     t2 = f"{df1.iloc[0,9]}-{df1.iloc[0,10]}-{df1.iloc[0,11]}"
-#     # 單位
-#     unitGroup = 'metric'
-#     # 語言
-#     lang = 'zh'
-#     # 需求資料
-#     include = 'hours'
-#     # 元素
-#     elements = 'datetime,pressure,humidity,temp,winddir,windspeed,precip'
-
-#     url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{a1}/{t1}/{t2}?key={key}&unitGroup={unitGroup}&lang={lang}&include={include}&elements={elements}"
-
-
-#     response = requests.get(url)
-# #     print(response.status_code)
-#     if response.status_code == 200:
-#         data = json.loads(response.text)
-# #         pprint(data)
-#         a = pd.DataFrame(data['days'][0]['hours'])
-#         df1['氣溫(℃)_x'] = a['temp']
-#         df1['測站氣壓(hPa)_x'] = a['pressure']
-#         df1['相對溼度(%)_x'] = a['humidity']
-#         df1['降水量(mm)_x'] = a['precip']
-#         df1['風向(360degree)_x'] = a['winddir']
-#         df1['風速(m/s)_x'] = a['windspeed']*1000/3600
-#         df1 = df1.round({'風速(m/s)_x':1})
-#     return df1
-
 
 # https://www.visualcrossing.com
 def weatherAPI(df1):
@@ -269,9 +234,8 @@ def weatherAPI(df1):
     a1 = f"{df1.iloc[0,14]},{df1.iloc[0,13]}"
     # 時間
     t1 = f"{df1.iloc[0,9]}-{df1.iloc[0,10]}-{df1.iloc[0,11]}"
-    day = datetime.datetime.strptime(t1, '%Y-%m-%d')
-    delta = datetime.timedelta(days=1)
-    day1 = day + delta
+    # day = datetime.datetime.strptime(t1, '%Y-%m-%d')
+    day1 = datetime + timedelta(days=1)
     t2 = day1.strftime('%Y-%m-%d')
     # 單位
     unitGroup = 'metric'
