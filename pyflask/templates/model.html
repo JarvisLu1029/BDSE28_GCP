@@ -363,6 +363,7 @@
 							let div_re = document.getElementById('result');
 							let div_addr = document.getElementById('result_address');
 
+<<<<<<< HEAD
 							// 將資料印在 <div> 元素裡面
 							div_info.innerHTML = `<h3>相關資料</h3>`;
 							div_addr.innerHTML = `<b>${selectCity.value}${selectDist.value}${inputRoad.value}</b>`;
@@ -384,6 +385,24 @@
 								type: 'line',
 								data: {
 									labels: chartlabel,
+=======
+									// 取得 <div id="result"> 元素
+									let div_re = document.getElementById('result');
+									let div_addr = document.getElementById('result_address');
+
+									// 將資料印在 <div> 元素裡面
+									div_addr.innerHTML = `<b>${selectCity.value}${selectDist.value}${inputRoad.value}</b>`
+									div_re.innerHTML = `<b> 人口密度 : ${alldata['density']}  人/每平方公里 </b>`;
+
+									// 圖表js
+									countChart += 1;
+									if (countChart > 3) {
+										countChart = 0;
+									}
+									var ctx = document.getElementById(`myChart${countChart}`);
+									var get_tab = document.getElementById(`tab${countChart}`);
+									get_tab.click();
+>>>>>>> refs/remotes/origin/main
 
 									datasets: [{
 										backgroundColor: 'rgba(255, 255, 255, 0.2)',
