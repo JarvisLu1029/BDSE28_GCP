@@ -126,7 +126,6 @@
 					<!-- <p>敘述模型</p> -->
 				</header>
 
-
 				<input class="js-demeter-tw-zipcode-selector" data-city="#city" data-dist="#dist"
 					placeholder="請輸入郵遞區號" />
 				<select id="city" placeholder="請選擇縣市"></select>
@@ -149,10 +148,10 @@
 				<!-- 頁籤 -->
 				<div class="tab_css">
 					<!-- TAB1 打包區塊 start -->
-					<input id="tab1" type="radio" name="tab" checked="checked" />
+					<input id="tab1" type="radio" name="tab" />
 					<label for="tab1">預測地點 1</label>
 					<div class="tab_content">
-						<div class="chart-box dark">
+						<div >
 							<div class="chart-body">
 								<canvas id="myChart1" class="box" style="height: 400px; width: 100%;"></canvas>
 							</div>
@@ -164,7 +163,7 @@
 					<input id="tab2" type="radio" name="tab" />
 					<label for="tab2">預測地點 2</label>
 					<div class="tab_content">
-						<div class="chart-box dark">
+						<div>
 							<div class="chart-body">
 								<canvas id="myChart2" class="box" style="height: 400px; width: 100%;"></canvas>
 							</div>
@@ -174,7 +173,7 @@
 					<input id="tab3" type="radio" name="tab" />
 					<label for="tab3">預測地點 3</label>
 					<div class="tab_content">
-						<div class="chart-box dark">
+						<div>
 							<div class="chart-body">
 								<canvas id="myChart3" class="box" style="height: 400px; width: 100%;"></canvas>
 							</div>
@@ -184,260 +183,315 @@
 				</div>
 
 				</br>
-				<h3>相關資訊</h3>
-				<div id="result_address">
-					<div>
-						<div id="result"></div>
-						<div class="table-wrapper">
-							<table class="alt">
-								<thead>
-									<tr>
-										<th>時間</th>
-										<th>氣溫(℃)_x</th>
-										<th>測站氣壓(hPa)_x</th>
-										<th>相對溼度(%)_x</th>
-										<th>車禍預測級距</th>
-									</tr>
-								</thead>
-								<!-- 放Js要顯示的資料 -->
-								<tbody>
+				<div id="information"></div>
+				<div id="result_address"></div>
+				<div id="result"></div>
 
-								</tbody>
+				<div class="table-wrapper">
+					<table class="alt">
+						<thead id="informationhead">
 
-							</table>
-						</div>
+						</thead>
+						<!-- 放Js要顯示的資料 -->
+						<tbody>
 
-						<hr />
+						</tbody>
 
-						<script>
+					</table>
+				</div>
 
-							const selectCity = document.querySelector('#city');
-							const selectDist = document.querySelector('#dist');
-							const inputRoad = document.querySelector('#road');
-							let tbody = document.querySelector('table > tbody');
+				<hr />
 
-							let map = L.map('map', { scrollWheelZoom: false }).setView([25.0339145, 121.5412233], 13);
+				<script>
 
-							//初始化地圖圖層(預設)
-							L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-								attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-							}).addTo(map);
+					const selectCity = document.querySelector('#city');
+					const selectDist = document.querySelector('#dist');
+					const inputRoad = document.querySelector('#road');
+					let tbody = document.querySelector('table > tbody');
 
-							let marker = null;
-							// 第幾個頁籤的圖表
-							let countChart = 0;
+					let map = L.map('map', { scrollWheelZoom: false }).setView([25.0339145, 121.5412233], 13);
 
-							document.querySelector('button#btn_request').addEventListener('click', function (event) {
-								const result = document.querySelector('#result');
-								const result_address = document.querySelector('#result_address');
+					//初始化地圖圖層(預設)
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+					}).addTo(map);
 
-								fetch(`/model/${selectCity.value}${selectDist.value}/${inputRoad.value}`, {
-									method: "GET"
-								}).then(function (response) {
-									return response.json();
-								}).then(function (alldata) {
-									// if (marker) {
-									// 	marker.remove();
-									// 	circle.remove();
-									// }
+					let marker = null;
+					// 第幾個頁籤的圖表
+					let countChart = 0;
 
-									map.panTo([alldata.coordinate[0], alldata.coordinate[1]], 1);
+					document.querySelector('button#btn_request').addEventListener('click', function (event) {
+						const result = document.querySelector('#result');
+						const result_address = document.querySelector('#result_address');
 
-									let cautionIcon = L.icon({
-										iconUrl: '../static/images/caution(3).png',
+						fetch(`/model/${selectCity.value}${selectDist.value}/${inputRoad.value}`, {
+							method: "GET"
+						}).then(function (response) {
+							return response.json();
+						}).then(function (alldata) {
+							// if (marker) {
+							// 	marker.remove();
+							// 	circle.remove();
+							// }
+
+							map.panTo([alldata.coordinate[0], alldata.coordinate[1]], 1);
+
+							let cautionIcon = L.icon({
+								iconUrl: '../static/images/caution(3).png',
+								iconSize: [64, 64],
+								iconAnchor: [32, 64],
+								popupAnchor: [0, -60]
+							});
+
+							switch (alldata['rank'][0].match(/rank(\d+)/)[1]) {
+								case ('1'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/cross-road(1).png',
 										iconSize: [64, 64],
 										iconAnchor: [32, 64],
 										popupAnchor: [0, -60]
 									});
+									break;
+								case ('2'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/cross-road(1).png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('3'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/cross-road(2).png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('4'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/cross-road(3).png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('5'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/caution.png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('6'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/caution.png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('7'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/caution(1).png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('8'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/caution(1).png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+								case ('9'):
+									cautionIcon = L.icon({
+										iconUrl: '../static/images/caution(2).png',
+										iconSize: [64, 64],
+										iconAnchor: [32, 64],
+										popupAnchor: [0, -60]
+									})
+									break;
+							}
 
-									switch (alldata['rank'][0][4]) {
-										case ('1'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/cross-road(1).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											});
-											break;
-										case ('2'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/cross-road(1).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('3'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/cross-road(2).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('4'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/cross-road(3).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('5'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/caution.png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('6'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/caution.png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('7'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/caution(1).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('8'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/caution(1).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-										case ('9'):
-											cautionIcon = L.icon({
-												iconUrl: '../static/images/caution(2).png',
-												iconSize: [64, 64],
-												iconAnchor: [32, 64],
-												popupAnchor: [0, -60]
-											})
-											break;
-									}
+							marker = L.marker([alldata.coordinate[0], alldata.coordinate[1]], { icon: cautionIcon }).addTo(map)
+								.bindPopup(`<b>${selectCity.value}${selectDist.value}${inputRoad.value}</b>`)
+								.openPopup();
+							circle = L.circle([alldata.coordinate[0], alldata.coordinate[1]], { radius: 500 }).addTo(map);
 
-									marker = L.marker([alldata.coordinate[0], alldata.coordinate[1]], { icon: cautionIcon }).addTo(map)
-										.bindPopup(`<b>${selectCity.value}${selectDist.value}${inputRoad.value}</b>`)
-										.openPopup();
-									circle = L.circle([alldata.coordinate[0], alldata.coordinate[1]], { radius: 500 }).addTo(map);
+							// 清空 tbody 底下既有元素，如 tr td 等
+							tbody.innerHTML = '';
 
-									// 清空 tbody 底下既有元素，如 tr td 等
-									tbody.innerHTML = '';
+							let chartlabel = [];
+							let chartdata = [];
 
-									let chartlabel = [];
-									let chartdata = [];
+							let info_head = document.getElementById('informationhead');
+							info_head.innerHTML = '';
 
-									// 將回傳資料動態生成在網頁上
-									for (let i = 0; i < 24; i++) {
-										//輸出對應的 html tag
-										let tr = document.createElement("tr");
-										tr.innerHTML = `<td>${alldata['發生時間'][i]}</td>
+							info_head.innerHTML = `<tr>
+								<th>時間</th>
+								<th>氣溫(℃)</th>
+								<th>降水量(mm)</th>
+								<th>測站氣壓(hPa)</th>
+								<th>相對溼度(%)</th>
+								<th>危險程度</th>
+								<tr>`
+
+							// 將回傳資料動態生成在網頁上
+							for (let i = 0; i < 24; i++) {
+								//輸出對應的 html tag
+								let tr = document.createElement("tr");
+								tr.innerHTML = `<td>${alldata['發生時間'][i]}</td>
 												<td>${alldata['氣溫(℃)_x'][i]}</td>
+												<td>${alldata['降水量(mm)_x'][i]}</td>
 												<td>${alldata['測站氣壓(hPa)_x'][i]}</td>
 												<td>${alldata['相對溼度(%)_x'][i]}</td>
 												<td>${alldata['rank'][i]}</td>`
 
-										tbody.appendChild(tr);
+								tbody.appendChild(tr);
+								chartlabel.push(`${alldata['發生時間'][i]}時`)
+								var chartdata_rank = alldata['rank'][i].match(/rank(\d+)/)[1];
+								chartdata.push(parseInt(chartdata_rank));
+							}
 
-										chartlabel.push(`${alldata['發生時間'][i]}時`)
-										chartdata.push(parseInt(alldata['rank'][i][4]))
-									}
+							let div_info = document.getElementById('information');
+							// 取得 <div id="result"> 元素
+							let div_re = document.getElementById('result');
+							let div_addr = document.getElementById('result_address');
 
-									// 取得 <div id="result"> 元素
-									let div_re = document.getElementById('result');
+							// 將資料印在 <div> 元素裡面
+							div_info.innerHTML = `<h3>相關資料</h3>`;
+							div_addr.innerHTML = `<b>${selectCity.value}${selectDist.value}${inputRoad.value}</b>`;
+							div_re.innerHTML = `<b> 人口密度 : ${alldata['density']}  人/每平方公里 </b>`;
 
-									// 將資料印在 <div> 元素裡面
-									div_re.innerHTML = `<b>人口密度 : ${alldata['density']} /每平方公里 </b>`;
+							// 圖表js
+							countChart += 1;
+							if (countChart > 3) {
+								countChart = 1;
+							}
+							if (document.getElementById(`myChart${countChart}`).innerHTML != null) {
+								document.getElementById(`myChart${countChart}`).innerHTML = ""
+							}
+							var ctx = document.getElementById(`myChart${countChart}`);
+							var get_tab = document.getElementById(`tab${countChart}`);
+							get_tab.click();
 
-									// 圖表js
-									countChart += 1;
-									var ctx = document.getElementById(`myChart${countChart}`);
+							var myChart = new Chart(ctx, {
+								type: 'line',
+								data: {
+									labels: chartlabel,
 
-									var myChart = new Chart(ctx, {
-										type: 'line',
-										data: {
-											labels: chartlabel,
-											datasets: [{
-												backgroundColor: 'rgba(54, 162, 235, 0.2)',
-												borderColor: 'rgba(54, 162, 235, 1)',
-												borderWidth: 3,
-												label: '危險程度',
-												data: chartdata,
-												fill: true, // 是否填滿色彩
-												pointStyle: 'rect', // 點點樣式
-												pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-											}]
+									datasets: [{
+										backgroundColor: 'rgba(255, 255, 255, 0.2)',
+										borderColor: 'rgba(54, 162, 235, 1)',
+										// borderWidth: 1,
+										data: chartdata,
+										lineTension: 0,
+										fill: true, // 是否填滿色彩
+										pointRadius: 8, // set the point radius to 5 pixels
+										pointStyle: 'circle', // 點點樣式
+										pointBackgroundColor: function (chartdata) {
+											let value = chartdata.dataset.data[chartdata.dataIndex];
+											switch (value) {
+												case (1): return '#15FF00'
+													break;
+												case (2): return '#48FF00'
+													break;
+												case (3): return '#7BFF00'
+													break;
+												case (4): return '#AEFF00'
+													break;
+												case (5): return '#E1FF00'
+													break;
+												case (6): return '#FFE900'
+													break;
+												case (7): return '#FFE600'
+													break;
+												case (8): return '#FF8300'
+													break;
+												case (9): return '#FF5000'
+													break;
+												case (10): return '#FF1D00'
+													break;
+											};
+											// return value;
+											// ? 'red' : 'blue';
 										},
-										options: {
-											legend: {
-												labels: {
-													fontColor: 'white' // 標籤顏色 
-												}
-											},
-											scales: {
-												xAxes: [{
-													gridLines: {
-														display: false, // X軸 線條不顯示 
-													},
-													ticks: {
-														fontColor: "#CCC" // X軸 文字顏色 
-													},
-												}],
-												yAxes: [{
-													gridLines: {
-														color: 'rgba(255, 255, 255, 0.1)' // Y軸 線條顏色 
-													},
-													ticks: {
-														fontColor: "#CCC", // Y軸 文字顏色 
-														// beginAtZero: true,// Y軸 從0開始
-														suggestedMin: 0,
-														suggestedMax: 10,
-														stepSize: 1,
-														fixedStepSize: 1
-													},
-												}]
-											}
+									}],
+								},
+								options: {
+									legend: {
+										labels: {
+											fontColor: 'white' // 標籤顏色 
 										}
-									});
+									},
+									scales: {
+										xAxes: [{
+											gridLines: {
+												display: false, // X軸 線條不顯示 
+											},
+											ticks: {
+												fontColor: "#5B5B5B", // X軸 文字顏色 
+											},
+											scaleLabel: {
+												display: true,
+												labelString: '未來24小時'
+											}
+										}],
+										yAxes: [{
+											gridLines: {
+												color: '#E0E0E0' // Y軸 線條顏色 
+											},
+											ticks: {
+												fontColor: "#5B5B5B", // Y軸 文字顏色 
+												// beginAtZero: true,// Y軸 從0開始
+												suggestedMin: 0,
+												suggestedMax: 10,
+												stepSize: 1,
+												fixedStepSize: 1
+											},
+											scaleLabel: {
+												display: true,
+												labelString: '危險程度'
+											}
+										}]
+									}
+								}
+							});
 
-								})
-							})
-						</script>
+						})
+					})
+				</script>
 
 
 
-					</div>
+		</div>
 
-					<!-- Footer -->
+		<!-- Footer -->
 
 
-					<!-- Copyright -->
-					<div id="copyright">
-						<ul>
-							<li>車禍數據分析</li>
-							<li>Design: <a>BDSE28-No.4</a></li>
-						</ul>
-					</div>
+		<!-- Copyright -->
+		<div id="copyright">
+			<ul>
+				<li>車禍數據分析</li>
+				<li>Design: <a>BDSE28-No.4</a></li>
+			</ul>
+		</div>
 
-				</div>
+	</div>
 
-				<!-- Scripts -->
-				<script src="../static/assets/js/jquery.min.js"></script>
-				<script src="../static/assets/js/jquery.scrollex.min.js"></script>
-				<script src="../static/assets/js/jquery.scrolly.min.js"></script>
-				<script src="../static/assets/js/browser.min.js"></script>
-				<script src="../static/assets/js/breakpoints.min.js"></script>
-				<script src="../static/assets/js/util.js"></script>
-				<script src="../static/assets/js/main.js"></script>
+	<!-- Scripts -->
+	<script src="../static/assets/js/jquery.min.js"></script>
+	<script src="../static/assets/js/jquery.scrollex.min.js"></script>
+	<script src="../static/assets/js/jquery.scrolly.min.js"></script>
+	<script src="../static/assets/js/browser.min.js"></script>
+	<script src="../static/assets/js/breakpoints.min.js"></script>
+	<script src="../static/assets/js/util.js"></script>
+	<script src="../static/assets/js/main.js"></script>
 
 </body>
 

@@ -159,7 +159,7 @@
 				<script>
 
 					// var map = L.map('map').setView([25.0305061, 121.5289971], 13);
-					var map = L.map('map', { scrollWheelZoom: false }).setView([25.0305061, 121.5289971], 13);
+					var map = L.map('map').setView([25.0305061, 121.5289971], 13);
 
 					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -167,7 +167,6 @@
 
 					var locIcon = L.icon({
 						iconUrl: '../static/images/location-61.png',
-
 						iconSize: [30, 45], // size of the icon
 						// shadowSize: [15, 30], // size of the shadow
 						iconAnchor: [15, 35], // point of the icon which will correspond to marker's location
