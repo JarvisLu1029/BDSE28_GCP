@@ -2,11 +2,7 @@ import numpy as np
 import pandas as pd 
 from scipy import spatial
 import openpyxl
-<<<<<<< HEAD
 from datetime import datetime ,timedelta
-=======
-from datetime import datetime,timedelta
->>>>>>> refs/remotes/origin/main
 import requests , json
 import pickle
 import pytz
@@ -228,11 +224,6 @@ def dataFill(dic):
     
     return df
 
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/main
-
 # https://www.visualcrossing.com
 def weatherAPI(df1):
     # 密鑰
@@ -243,13 +234,8 @@ def weatherAPI(df1):
     a1 = f"{df1.iloc[0,14]},{df1.iloc[0,13]}"
     # 時間
     t1 = f"{df1.iloc[0,9]}-{df1.iloc[0,10]}-{df1.iloc[0,11]}"
-<<<<<<< HEAD
-    # day = datetime.now(tz).strptime(t1, '%Y-%m-%d')
-    day1 = datetime.now(tz)+timedelta(days=1)
-=======
     # day = datetime.datetime.strptime(t1, '%Y-%m-%d')
     day1 = datetime.now(tz) + timedelta(days=1)
->>>>>>> refs/remotes/origin/main
     t2 = day1.strftime('%Y-%m-%d')
     # 單位
     unitGroup = 'metric'
