@@ -84,9 +84,9 @@ def model_address(city_dist,road):
 def indexTest():
     return render_template('leaflet.html')
 
-@app.route('/forivanfangyu')
+@app.route('/team')
 def ivanfangyu():
-    return render_template('ivanfangyu.html')
+    return render_template('team.html')
 
     connection.close()
     engine.dispose()

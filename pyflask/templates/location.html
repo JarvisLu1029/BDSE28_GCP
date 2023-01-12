@@ -89,7 +89,7 @@
 				<li><a href="/">車禍數據儀表板</a></li>
 				<li class="active"><a href="location">各縣市車禍分佈</a></li>
 				<li><a href="model">車禍數據模型</a></li>
-				<li class="active"><a href="team">組員介紹</a></li>
+				<li><a href="team">組員介紹</a></li>
 
 			</ul>
 
@@ -153,8 +153,8 @@
 
 				<script>
 
-					// var map = L.map('map').setView([25.0305061, 121.5289971], 13);
-					var map = L.map('map').setView([25.0305061, 121.5289971], 13);
+					// var map = L.map('map').setView([25.0305061, 121.5289971], 12);
+					var map = L.map('map').setView([25.0305061, 121.5289971], 12);
 
 					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -190,7 +190,7 @@
 								arrLayers = [];
 							}
 
-							document.getElementById('accident_count').innerText = `當年度車禍數 :  + ${arr.length / 2} 件`;
+							document.getElementById('accident_count').innerText = `當年度車禍數 :  ${arr.length / 2} 件`;
 
 							var markers = L.markerClusterGroup({ spiderfyOnMaxZoom: false, showCoverageOnHover: false, zoomToBoundsOnClick: false });
 
@@ -229,7 +229,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([25.1272072, 121.7367835], 13);
+								map.panTo([25.1272072, 121.7367835], 12);
 								break;
 							case ("taipei"):
 								fetch('../static/polygon/taipei.json')
@@ -237,7 +237,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([25.0339145, 121.5412233], 13);
+								map.panTo([25.0339145, 121.5412233], 12);
 								break;
 							case ("newtaipeicity"):
 								fetch('../static/polygon/newTaipeiCity.json')
@@ -245,7 +245,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([25.0149318, 121.4729936, 15], 13);
+								map.panTo([25.0149318, 121.4729936, 15], 12);
 								break;
 							case ("taoyuan"):
 								fetch('../static/polygon/taoyuan.json')
@@ -253,7 +253,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.991025, 121.2850733], 13);
+								map.panTo([24.991025, 121.2850733], 12);
 								break;
 							case ("hsinchu"):
 								fetch('../static/polygon/hsinchu.json')
@@ -261,7 +261,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.7835529, 120.9316642], 13);
+								map.panTo([24.7835529, 120.9316642], 12);
 								break;
 							case ("hsinchucounty"):
 								fetch('../static/polygon/hsinchuCounty.json')
@@ -269,7 +269,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.8491971, 121.0670444], 13);
+								map.panTo([24.8491971, 121.0670444], 12);
 								break;
 							case ("miaolicounty"):
 								fetch('../static/polygon/miaoliCounty.json')
@@ -277,7 +277,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.5456455, 120.8527485], 13);
+								map.panTo([24.5456455, 120.8527485], 12);
 								break;
 							case ("taichung"):
 								fetch('../static/polygon/taichung.json')
@@ -285,7 +285,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.1459811, 120.6707398], 13);
+								map.panTo([24.1459811, 120.6707398], 12);
 								break;
 							case ("changhuacounty"):
 								fetch('../static/polygon/changhuaCounty.json')
@@ -293,7 +293,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.992187, 120.3230685], 13);
+								map.panTo([23.992187, 120.3230685], 12);
 								break;
 							case ("nantoucounty"):
 								fetch('../static/polygon/nantouCounty.json')
@@ -301,7 +301,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.9508903, 120.9468249], 13);
+								map.panTo([23.9508903, 120.9468249], 12);
 								break;
 							case ("yunlincounty"):
 								fetch('../static/polygon/yunlinCounty.json')
@@ -309,7 +309,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.6745746, 120.2945075], 13);
+								map.panTo([23.6745746, 120.2945075], 12);
 								break;
 							case ("chiayi"):
 								fetch('../static/polygon/chiayi.json')
@@ -317,7 +317,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.4790323, 120.414277], 13);
+								map.panTo([23.4790323, 120.414277], 12);
 								break;
 							case ("chiayicounty"):
 								fetch('../static/polygon/chiayiCounty.json')
@@ -325,7 +325,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.425616, 120.3974609], 13);
+								map.panTo([23.425616, 120.3974609], 12);
 								break;
 							case ("tainan"):
 								fetch('../static/polygon/tainan.json')
@@ -333,7 +333,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.0070342, 120.249638], 13);
+								map.panTo([23.0070342, 120.249638], 12);
 								break;
 							case ("kaohsiung"):
 								fetch('../static/polygon/kaohsiung.json')
@@ -341,7 +341,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([22.6283618, 120.3265012], 13);
+								map.panTo([22.6283618, 120.3265012], 12);
 								break;
 							case ("pingtungcounty"):
 								fetch('../static/polygon/pingtungCounty.json')
@@ -349,7 +349,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([22.6053635, 120.5368672], 13);
+								map.panTo([22.6053635, 120.5368672], 12);
 								break;
 							case ("taitungcounty"):
 								fetch('../static/polygon/taitungCounty.json')
@@ -357,7 +357,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([22.7785848, 121.0972989], 13);
+								map.panTo([22.7785848, 121.0972989], 12);
 								break;
 							case ("hualiencounty"):
 								fetch('../static/polygon/hualienCounty.json')
@@ -365,7 +365,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.7289695, 121.379031], 13);
+								map.panTo([23.7289695, 121.379031], 12);
 								break;
 							case ("yilancounty"):
 								fetch('../static/polygon/yilanCounty.json')
@@ -373,7 +373,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.6927874, 121.7777614], 13);
+								map.panTo([24.6927874, 121.7777614], 12);
 								break;
 							case ("penghucounty"):
 								fetch('../static/polygon/penghuCounty.json')
@@ -381,7 +381,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([23.5682493, 119.5960847], 13);
+								map.panTo([23.5682493, 119.5960847], 12);
 								break;
 							case ("kinmencounty"):
 								fetch('../static/polygon/kinmen.json')
@@ -389,7 +389,7 @@
 									.then(data => {
 										polygon = L.polygon(data, { color: 'yellow' }).addTo(map);
 									})
-								map.panTo([24.6916992, 118.2699011], 13);
+								map.panTo([24.6916992, 118.2699011], 12);
 								break;
 							case ("lienchiangcounty"):
 								fetch('../static/polygon/lienchiangCounty.json')
@@ -399,7 +399,7 @@
 											L.polygon(data, { color: 'yellow' }).addTo(map);
 										});
 									})
-								map.panTo([26.139729, 120.0108395], 13);
+								map.panTo([26.139729, 120.0108395], 12);
 								break;
 						}
 
