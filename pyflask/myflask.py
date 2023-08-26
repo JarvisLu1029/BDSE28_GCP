@@ -5,7 +5,7 @@ from sqlalchemy import func
 import cryptography
 import geocoder
 import use_model.xgdata as weather
-
+import pymysql
 
 
 app = Flask(__name__)
@@ -15,6 +15,16 @@ moment = Moment(app)
 engine = db.create_engine("mysql+pymysql://root:123456@172.10.0.9/accident2")
 metadata = db.MetaData()
 connection = engine.connect()
+
+connection = pymysql.connect(
+    host='172.10.0.9',
+    user='root',
+    port=3306,
+    password='123456',
+    database='accident2',
+    cursorclass=pymysql.cursors.DictCursor
+)
+
 
 @app.route('/')
 def index():
@@ -31,16 +41,24 @@ def option():
 # 接收location.html的year loc選項 並抓取該資料庫table的值
 @app.route('/option/<loc_year>',methods=['GET'])
 def location_year(loc_year):
-    table_location = db.Table(f'{loc_year}', metadata , autoload=True , autoload_with=engine)
-    query = db.select(table_location.c.lat, table_location.c.lng)
-    proxy = connection.execute(query)
+    # table_location = db.Table(f'{loc_year}', metadata , autoload=True , autoload_with=engine)
+    # query = db.select(table_location.c.lat, table_location.c.lng)
+    # proxy = connection.execute(query)
+    with connection.cursor() as cursor:
+        sql = f'''
+        SELECT lat, lng FROM {loc_year};
+        '''
+        cursor.execute(sql)
+        results = cursor.fetchall()
 
     latlng = []
     mylist = []
-    
-    for i in proxy.fetchall():
-        latlng.append(i.lat)
-        latlng.append(i.lng)
+    for i in results:
+        latlng.append(i['lat'])
+        latlng.append(i['lng'])
+    # for i in proxy.fetchall():
+    #     latlng.append(i.lat)
+    #     latlng.append(i.lng)
         
     mylist.extend(latlng)
     return mylist

@@ -10,7 +10,10 @@ import pytz
 stream = pd.read_csv('110.csv', low_memory=False)
 stream['總計_流量(PCU)'] = stream['總計_流量(PCU)'].str.findall('\d').str.join('').astype(int)
 stream['ID']=stream['年份'].astype(str)+stream['調查站_座標_經度'].astype(str)+stream['調查站_座標_緯度'].astype(str)
-stream = stream.groupby('ID').mean()
+try:
+    stream = stream.groupby('ID').mean()
+except Exception as e:
+    print(e)
 KDTree_stream = spatial.KDTree(stream[['調查站_座標_經度','調查站_座標_緯度']])
 
 def population(county_dist , coo):
@@ -46,22 +49,22 @@ def dataFill(dic):
     lat = dic['lat']
     pop = dic['pop']
     
-    
-    input_columns = ['發生年度','發生月份', '發生日期', '發生時間', '經度', '緯度',  'population_density']
+    input_columns = ['發生年度','發生月份', '發生日期', '發生時間', '經度', '緯度', 'population_density']
     columns = ['dow', 'doy', '元旦', '春節', '二二八', '兒童清明', '端午', '中秋', '雙十', '發生年度','發生月份', '發生日期', '發生時間', '經度', '緯度', '氣溫(℃)_x', '測站氣壓(hPa)_x','相對溼度(%)_x', '降水量(mm)_x', '風向(360degree)_x', '風速(m/s)_x', 'population_density', '流量加權']
 
-    input_data = pd.DataFrame(columns=input_columns, index=[1]); input_data.iloc[0,:] = [year, month, day, hour, long, lat,pop]; input_data.astype(str)
-    df = pd.DataFrame(columns = columns, index=[i for i in range(24)])
+    input_data = pd.DataFrame(columns=input_columns, index=[0])
+    input_data.iloc[0, :] = [year, month, day, hour, long, lat, pop]
+    input_data = input_data.astype(str)
 
-    df.經度 = long
-    df.緯度 = lat
-    df.population_density = pop
+    df = pd.DataFrame(columns=columns, index=[i for i in range(24)])
+    df['經度'] = long
+    df['緯度'] = lat
+    df['population_density'] = pop
+    
+    input_data['datetime'] = input_data.apply(lambda x: f"{x['發生年度']}-{x['發生月份']}-{x['發生日期']} {x['發生時間']}:00:00", axis=1)
+    time = pd.Timestamp(input_data['datetime'].iloc[0])
 
-    datetime = input_data.apply((lambda x: x.發生年度+'-'+ x.發生月份+'-'+x.發生日期+' '+x.發生時間+':00:00'), axis = 1)
-    time = pd.datetime.strptime(datetime[1], '%Y-%m-%d %H:%M:%S')
     time_range = pd.date_range(start=time, periods=24, freq='H')
-    time_strings = time_range.strftime('%Y-%m-%d %H:%M:%S')
-
     df['dow'] = time_range.dayofweek
     df['doy'] = time_range.dayofyear
     df['發生年度'] = time_range.year
