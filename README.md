@@ -1,3 +1,6 @@
+This is a web application to show car accident in Taiwan from 2018-2022.
+And predict the probability of car accidents at specific locations.
+
 # Run it using Docker Compose
 To start docker containers, You need to enter the `pyflask` directory. Run:
 ```
